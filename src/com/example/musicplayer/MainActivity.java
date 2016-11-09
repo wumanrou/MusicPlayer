@@ -1,18 +1,15 @@
 package com.example.musicplayer;
-
-
-
 import android.os.Bundle;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageButton;
 import android.widget.TextView;
-
 
 public class MainActivity extends Activity implements OnClickListener {
 	//歌曲标题，作者文本框
@@ -53,43 +50,14 @@ public class MainActivity extends Activity implements OnClickListener {
 		Intent intent=new Intent(this,MusicService.class);
 		//启动后台Service
 		startService(intent);
-	}
-		public class ActivityReceiver extends BroadcastReceiver {
-        public void onReceiver(Context context,Intent intent){
-				//获取Intent中的update消息
-				int update=intent.getIntExtra("update", -1);
-				//获取当前播放音乐的序号
-				int current=intent.getIntExtra("current", -1);
-			  //如果current 不为-1，则显示正在播放的音乐名和演唱者
-				if(current>=0){
-					title.setText(titleStrs[current]);
-					     author.setText(authorStrs[current]);
-				}
-				//未播放状态显示播放按钮
-
-				switch(update){
-				case 0x11:
-					play.setImageResource(R.drawable.selector_btn);
-					//播放状态下设置使用暂停图标
-				   case 0x12:
-						play.setImageResource(R.drawable.stop);
-					status=0x12;break;
-					//暂停状态下设置使用播放图标
-				   case 0x13:
-			 play.setImageResource(R.drawable.stop);
-						status=0x13;
-						break;
-				}
-			}
-
-		@Override
-		public void onReceive(Context context, Intent intent) {
-			// TODO Auto-generated method stub
-			
-		}
-       }
 		
-	
+	}
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		// Inflate the menu; this adds items to the action bar if it is present.
+		getMenuInflater().inflate(R.menu.main, menu);
+		return true;
+	}
 
 	@Override
 	public void onClick(View source) {
@@ -107,11 +75,38 @@ public class MainActivity extends Activity implements OnClickListener {
 		//发送广播，将被Service中的广播接收者收到
 		sendBroadcast(intent);
     }
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-		
-	}
 	
+		public class ActivityReceiver extends BroadcastReceiver {
+        public void onReceive(Context context,Intent intent){
+				//获取Intent中的update消息
+				int update=intent.getIntExtra("update", -1);
+				//获取当前播放音乐的序号
+				int current=intent.getIntExtra("current", -1);
+			  //如果current 不为-1，则显示正在播放的音乐名和演唱者
+				if(current>=0){
+					title.setText(titleStrs[current]);
+					     author.setText(authorStrs[current]);
+				}
+				//未播放状态显示播放按钮
+
+				switch(update){
+				case 0x11:
+					play.setImageResource(R.drawable.play);
+					status=0x11;
+					break;
+					//播放状态下设置使用暂停图标
+				   case 0x12:
+						play.setImageResource(R.drawable.pause);
+					status=0x12;
+					break;
+					//暂停状态下设置使用播放图标
+				   case 0x13:
+			 play.setImageResource(R.drawable.play);
+						status=0x13;
+						break;
+				}
+			}
+
+		}
 }
 
